@@ -1,0 +1,107 @@
+---
+title: "Fantasy Football Article"
+author: "Trent Bellinger"
+date: "12/8/2022"
+output: html_document
+---
+
+```{r Data Loading}
+library(ggplot2)
+library(ggimage)
+library(gganimate)
+
+qb_data <- read.csv("QBData.csv")
+head(qb_data)
+
+qb_images <- c("JoshAllen.png", "TomBrady.png", "JustinHerbert.png", "PatrickMahomes.png", "MatthewStafford.png", "DakPrescott.png", 
+               "JoeBurrow.png", "AaronRodgers.png", "KirkCousins.png", "JalenHurts.png", "KylerMurray.png", "DerekCarr.png", 
+               "RyanTannehill.png", "Carson Wentz.png", "LamarJackson.png", "JimmyGaroppolo.png", "MattRyan.png", "MacJones.png", 
+               "TaylorHeinicke.png", "RussellWilson.png", "BenRoethliberger.png", "TrevorLawrence.png", "TeddyBridgewater.png", 
+               "JaredGoff.png", "BakerMayfield.png")
+qb_data_new <- data.frame(qb_data[1:25, ], qb_images)
+qb_data_new
+```
+
+```{r Passing Yards Graph}
+linear_model <- lm(Total.Points ~ Passing.Yds, data = qb_data_new)
+summary(linear_model)
+
+# total_fantasy_points = 0.08279 * total_passing_yards + 14.101
+# r^2 = 0.6802
+
+ggplot(qb_data_new, aes(x = Total.Points, y = Passing.Yds)) + 
+  geom_point(size = 2) +
+  geom_smooth(formula = y ~ x, method=lm,  linetype="solid", color="darkred") +
+  geom_image(aes(image = qb_images), size = 0.05, asp = 1.5) +
+  # scale_color_gradient(low = "yellow", high = "darkred") +
+  labs(x = "Total Fantasy Points", y = "Total Passing Yards") +
+  ggtitle("Quarterback Passing Yards vs. Fantasy Points in the 2021 Season") +
+  theme(panel.background = element_rect(fill = "gray95", color = "white")) +
+  theme(title = element_text(face = "bold.italic", color = "black"), axis.title = element_text(face = "bold.italic", color = "black")) +
+  geom_text(x = 275, y = 5000, label = "total_fantasy_points = 0.08279 * total_passing_yards + 14.101 \n r^2 = 0.6802", 
+            family = "Times", color = "black")
+```
+
+``` {r Passing TDs Graph}
+linear_model_passing_tds <- lm(Total.Points ~ Passing.TDs, data = qb_data_new)
+summary(linear_model_passing_tds)
+
+# total_fantasy_points = 6.5950 * total_passing_tds + 166.94
+# r^2 = 0.724
+
+ggplot(qb_data_new, aes(x = Total.Points, y = Passing.TDs)) + 
+  geom_point(size = 2) +
+  geom_smooth(formula = y ~ x, method=lm,  linetype="solid", color="darkred") +
+  geom_image(aes(image = qb_images), size = 0.05, asp = 1.5) +
+  # scale_color_gradient(low = "yellow", high = "darkred") +
+  labs(x = "Total Fantasy Points", y = "Total Passing Touchdowns", color = "Passing Attempts") +
+  ggtitle("Quarterback Passing Touchdowns vs. Fantasy Points in the 2021 Season") +
+  theme(panel.background = element_rect(fill = "gray95", color = "white")) +
+  theme(title = element_text(face = "bold.italic", color = "black"), axis.title = element_text(face = "bold.italic", color = "black")) +
+  geom_text(x = 275, y = 40, label = "total_fantasy_points = 6.5950 * total_passing_tds + 166.94 \n r^2 = 0.724", 
+            family = "Times", color = "black")
+```
+
+``` {r Rushing Yards Graph}
+linear_model_rushing_yds <- lm(Total.Points ~ Rushing.Yds, data = qb_data_new)
+summary(linear_model_rushing_yds)
+
+# total_fantasy_points = 0.07848 * total_rushing_yards + 321.567
+# r^2 = 0.0646
+
+# much more variation in rushing yards vs 
+ggplot(qb_data_new, aes(x = Total.Points, y = Rushing.Yds)) + 
+  geom_point(size = 2) +
+  geom_smooth(formula = y ~ x, method=lm,  linetype="solid", color="darkblue") +
+  geom_image(aes(image = qb_images), size = 0.05, asp = 1.5) +
+  # scale_color_gradient(low = "lightblue", high = "darkblue") +
+  labs(x = "Total Fantasy Points", y = "Total Rushing Yards", color = "Rushing Attempts") +
+  ylim(min = 0, max = 1000) +
+  ggtitle("Quarterback Rushing Yards vs. Fantasy Points in the 2021 Season") +
+  theme(panel.background = element_rect(fill = "gray95", color = "white")) +
+  theme(title = element_text(face = "bold.italic", color = "black"), axis.title = element_text(face = "bold.italic", color = "black")) +
+  geom_text(x = 275, y = 900, label = "total_fantasy_points = 0.07848 * total_rushing_yards + 321.567 \n r^2 = 0.0646", 
+            family = "Times", color = "black")
+```
+
+``` {r Rushing TDs Graph}
+linear_model_rushing_tds <- lm(Total.Points ~ Rushing.TDs, data = qb_data_new)
+summary(linear_model_rushing_tds)
+
+# total_fantasy_points = 8.752 * total_rushing_tds + 320.219
+# r^2 = 0.08891
+
+ggplot(qb_data_new, aes(x = Total.Points, y = Rushing.TDs)) + 
+  geom_point(size = 2) +
+  geom_smooth(formula = y ~ x, method=lm,  linetype="solid", color="darkblue") +
+  geom_image(aes(image = qb_images), size = 0.05, asp = 1.5) +
+  # scale_color_gradient(low = "lightblue", high = "darkblue") +
+  labs(x = "Total Fantasy Points", y = "Total Rushing Touchdowns", color = "Rushing Attempts") +
+  ylim(min = -2, max = 12) +
+  ggtitle("Quarterback Rushing Touchdowns vs. Fantasy Points in the 2021 Season") +
+  theme(panel.background = element_rect(fill = "gray95", color = "white")) +
+  theme(title = element_text(face = "bold.italic", color = "black"), axis.title = element_text(face = "bold.italic", color = "black")) +
+  geom_text(x = 275, y = 9, label = "total_fantasy_points = 8.752 * total_rushing_tds + 320.219 \n r^2 = 0.08891", 
+            family = "Times", color = "black")
+```
+
